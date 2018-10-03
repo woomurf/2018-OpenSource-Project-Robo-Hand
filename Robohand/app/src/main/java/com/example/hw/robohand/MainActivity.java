@@ -47,16 +47,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(btService == null){
             btService = new BluetoothService(this,mHandler);
         }
-/*
+
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(btService.getConnectStatus()){
-                    btService.sendMessage(1);
+                    btService.sendMessage("1");
                 }
             }
         });
-*/
+
+        button2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btService.getConnectStatus()){
+                    btService.sendMessage("2");
+                }
+            }
+        });
+
+        button3.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btService.getConnectStatus()){
+                    btService.sendMessage("3");
+                }
+            }
+        });
+
+        btSet.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
 
 
