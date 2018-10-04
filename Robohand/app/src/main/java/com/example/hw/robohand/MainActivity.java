@@ -1,3 +1,22 @@
+/*
+    2018 KMU OPEN SOURCE PROJECT ROBOHAND
+    HYEONWOONG WOO, DAHUN KIM, HANUL BAE
+
+    BluetoothService 객체를 생성하여 Button activity, BTactivity 그리고 추가될 gesture activity 에서
+    같은 객체를 사용할 수 있도록 한다.
+
+    BluetoothService 객체는 bluetooth 연결, 기기 검색, 페어링된 기기와 연결, string 보내기 등의
+    기능을 수행하는 객체이다.
+
+    현재 registerReceiver, BroadcastReceiver 등에 대한 이해가 부족하여 BluetoothService의
+    discover 메소드를 구현하는데 곤란함이 있음. - 2018 10 04
+
+    
+ */
+
+
+
+
 package com.example.hw.robohand;
 
 import android.os.Handler;
