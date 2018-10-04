@@ -1,6 +1,16 @@
+import argparse
+import collections
+import hashlib
+import os.path
+import re
+import random
+import numpy as np
+import cv2
+
 import tensorflow as tf
 import tensorflow_hub as hub
-import numpy as np
+
+FLAGS = None
 
 tf.logging.set_verbosity(tf.logging.INFO)   #logging을 보기 위해
 
@@ -62,6 +72,10 @@ def adjust_image(data):
 
 
 def main(unused_argv):
+    # if not FLAGS.image_dir:
+    #     tf.logging.error('Must set flag --image_dir.')
+    #     return -1
+
     with tf.Graph().as_default() as g:
         # Load MNIST data.
         mnist = tf.contrib.learn.datasets.load_dataset("mnist")
@@ -104,4 +118,11 @@ def main(unused_argv):
 
 
 if __name__ == "__main__":
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument(
+    #     '--image_dir',
+    #     type=str,
+    #     default='',
+    #     help='Path to folders of labeled images.'
+    # )
     tf.app.run()
