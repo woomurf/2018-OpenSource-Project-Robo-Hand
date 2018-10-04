@@ -12,7 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
@@ -91,17 +91,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-    }
-
-
-
-    @Override
-    public void onClick(View view) {
-        if(btService.getDeviceState()){
-            btService.enableBluetooth();
-        }
-        else{
-            finish();
-        }
     }
 }
