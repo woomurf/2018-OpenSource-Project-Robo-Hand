@@ -62,14 +62,12 @@ def inceptionv3_model_fn(features, labels, mode):
 
 
 def adjust_image(data):
-    # Reshaped to [batch, height, width, channels].
-    imgs = tf.reshape(data, [-1, 28, 28, 1])
-    # Adjust image size to that in Inception-v3 input.
-    imgs = tf.image.resize_images(imgs, (299, 299))
-    # Convert to RGB image.
-    imgs = tf.image.grayscale_to_rgb(imgs)
-    return imgs
 
+    imgs = tf.reshape(data, [-1, 960, 720, 3])    #Tensor shape=(55000, 28, 28, 1)
+    # Adjust image size to that in Inception-v3 input.
+    imgs = tf.image.resize_images(imgs, (299, 299)) #Tensor shape=(55000, 299, 299, 1)
+
+    return imgs
 
 def main(unused_argv):
     # if not FLAGS.image_dir:
