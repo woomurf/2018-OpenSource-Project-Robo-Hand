@@ -63,9 +63,9 @@ def inceptionv3_model_fn(features, labels, mode):
 
 def adjust_image(data):
 
-    imgs = tf.reshape(data, [-1, 960, 720, 3])    #Tensor shape=(55000, 28, 28, 1)
+    imgs = tf.reshape(data, [-1, 960, 720, 3])
     # Adjust image size to that in Inception-v3 input.
-    imgs = tf.image.resize_images(imgs, (299, 299)) #Tensor shape=(55000, 299, 299, 1)
+    imgs = tf.image.resize_images(imgs, (299, 299))
 
     return imgs
 
