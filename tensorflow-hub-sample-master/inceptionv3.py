@@ -2,14 +2,22 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
 
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.logging.set_verbosity(tf.logging.INFO)   #logging을 보기 위해
 
 def inceptionv3_model_fn(features, labels, mode):
-    # Load Inception-v3 model.
+
+    # hub를 통해 Inception v3 모델을 불러옴
     module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
+
+    # Inception V3의 경우 입력은 299x299x3, 출력은 2048차원 벡터
     input_layer = adjust_image(features["x"])
     outputs = module(input_layer)
 
+    """
+    Estimator API
+    tf.layers.dense(inputs, units, activation)
+    inputs: 앞의 레이어, units: 레이어의 크기 정의, activation: sigmoid, ReLu 함수 정의
+    """
     logits = tf.layers.dense(inputs=outputs, units=10)
 
     predictions = {
@@ -20,11 +28,12 @@ def inceptionv3_model_fn(features, labels, mode):
         "probabilities": tf.nn.softmax(logits, name="softmax_tensor")
     }
 
-    if mode == tf.estimator.ModeKeys.PREDICT:
-        return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
+    if mode == tf.estimator.ModeKeys.PREDICT:   # mode가 PREDICT 일때
+        return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)   # 예측된 값을 dict 형태로 리턴한다.
 
-    # Calculate Loss (for both TRAIN and EVAL modes)
-    loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
+
+    # Calculate Loss (for both TRAIN and EVAL modes)    # mode가 train인 경우
+    loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits) # 경사하강법 훈련
 
     # Configure the Training Op (for TRAIN mode)
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -56,9 +65,9 @@ def main(unused_argv):
     with tf.Graph().as_default() as g:
         # Load MNIST data.
         mnist = tf.contrib.learn.datasets.load_dataset("mnist")
-        train_data = mnist.train.images  # Returns np.array
-        train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
-        eval_data = mnist.test.images  # Returns np.array
+        train_data = mnist.train.images  # Returns np.array # Returns np.array # shape (55000,784)
+        train_labels = np.asarray(mnist.train.labels, dtype=np.int32)   # train_labels = {ndarray} [7 3 4 ... 5 6 8], shape (55000,)
+        eval_data = mnist.test.images  # Returns np.array # shape (10000,784)
         eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
 
         # create input functions for train and evaluate methods.
