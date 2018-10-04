@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.content.Intent;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -75,12 +76,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        //액티비티 전환
+
         btSet.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), BTactivity.class);
+                startActivity(intent);
 
             }
         });
+
 
 
 
