@@ -19,6 +19,7 @@
 
 package com.example.hw.robohand;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -35,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
-    private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_CODE_BT = 2;
+
 
     private Button button1;
     private Button button2;
@@ -44,14 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btSet;
 
     private BluetoothService btService = null;
-
-    private final Handler mHandler = new Handler(){
-
-        @Override
-        public void handleMessage(Message msg){
-            super.handleMessage(msg);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         if(btService == null){
-            btService = new BluetoothService(this,mHandler);
+            Intent getIntent = getIntent();
+            btService = (BluetoothService) getIntent.getSerializableExtra("btService");
         }
 
         button1.setOnClickListener(new OnClickListener() {
@@ -101,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), BTactivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,REQUEST_CODE_BT);
 
             }
         });
@@ -111,4 +105,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 2) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("result");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //만약 반환값이 없을 경우의 코드를 여기에 작성하세요.
+            }
+        }
+    }//onActivityResult
+
 }

@@ -18,11 +18,12 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 import 	java.lang.reflect.Method;
 
-public class BluetoothService {
+public class BluetoothService implements Serializable{
 
     private static final String TAG = "BluetoothService";
 
@@ -32,8 +33,6 @@ public class BluetoothService {
     private static final int REQUEST_CODE_BT = 3;
 
     private BluetoothAdapter btAdapter;
-    private Activity mActivity;
-    private Handler mHandler;
     private BluetoothSocket mBTSocket;
 
     // Serial port Service UUID
@@ -42,10 +41,7 @@ public class BluetoothService {
     private ConnectedThread mConnectedThread;
 
 
-    public BluetoothService(Activity act,Handler handler){
-
-        mActivity = act;
-        mHandler = handler;
+    public BluetoothService(){
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -68,30 +64,6 @@ public class BluetoothService {
         }
     }
 
-
-    // Check the device bluetooth status and request bluetooth
-    public void bluetoothOn(){
-        Log.i(TAG,"Check the enabled Bluetooth");
-
-        if(btAdapter.isEnabled()){
-            Log.d(TAG,"Bluetooth Enable now");
-        }
-        else{
-            Log.d(TAG,"Bluetooth Enable Request");
-
-            Intent iEnable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            mActivity.startActivityForResult(iEnable,REQUEST_CODE_BT);  // bluetooth 허가 팝업 창을 띄운다.
-
-        }
-    }
-
-
-    public void bluetoothOff(){
-        btAdapter.disable(); // turn off
-    }
-
-/*   좀 더 공부가 필요한 부분.
-     registerReceiver가 Receiver에게 intent를 보내주는 것은 activity에 있을 경우에만 그러는 것인가?*/
 
 
 
