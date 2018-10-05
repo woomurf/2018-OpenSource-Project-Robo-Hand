@@ -11,7 +11,7 @@
     현재 registerReceiver, BroadcastReceiver 등에 대한 이해가 부족하여 BluetoothService의
     discover 메소드를 구현하는데 곤란함이 있음. - 2018 10 04
 
-    
+
  */
 
 

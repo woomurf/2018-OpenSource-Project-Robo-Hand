@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+import 	java.lang.reflect.Method;
 
 public class BluetoothService {
 
@@ -33,8 +34,7 @@ public class BluetoothService {
     private BluetoothAdapter btAdapter;
     private Activity mActivity;
     private Handler mHandler;
-    private ArrayAdapter<String> mBTArrayAdapter;
-    private Set<BluetoothDevice> mPairedDevices;
+    private BluetoothSocket mBTSocket;
 
     // Serial port Service UUID
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -91,47 +91,10 @@ public class BluetoothService {
     }
 
 /*   좀 더 공부가 필요한 부분.
-     registerReceiver가 Receiver에게 intent를 보내주는 것은 activity에 있을 경우에만 그러는 것인가?
+     registerReceiver가 Receiver에게 intent를 보내주는 것은 activity에 있을 경우에만 그러는 것인가?*/
 
-    private void discover(View view){
-        // Check if the device is already discovering
-        // 이미 찾는 중이라면 stop.
-        if(btAdapter.isDiscovering()){
-            btAdapter.cancelDiscovery();
-        }
-        else{
-            if(btAdapter.isEnabled()) {
-                mBTArrayAdapter.clear(); // clear items
-                btAdapter.startDiscovery();
 
-                // 동적으로 BroadcastReceiver를 등록한다.
-                // Intent를 보내주는데 이를 읽고 onReceiver()가 동작한다.
-                mActivity.registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
-            }
-            else{
-
-            }
-        }
-    }
-
-    final BroadcastReceiver blReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if(BluetoothDevice.ACTION_FOUND.equals(action)){
-
-                // 연결된 디바이스의 정보 얻기.
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                // add the name to the list
-                mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                mBTArrayAdapter.notifyDataSetChanged();  // array 업데이트 하기.
-            }
-        }
-    };
-
-*/
     public boolean getConnectStatus(){
         if(mConnectedThread != null){
             return true;
@@ -147,16 +110,57 @@ public class BluetoothService {
         }
     }
 
+    // bluetooth socket 만들기
+    // socket은 안드로이드와 통신 대상 사이에서 통로(?), 파이프(?) 역할을 하는 중요한 객체이다.
+
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+        try {
+            final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
+            return (BluetoothSocket) m.invoke(device, MY_UUID);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not create Insecure RFComm Connection",e);
+        }
+        return  device.createRfcommSocketToServiceRecord(MY_UUID);
+    }
 
 
+    // BT activity 에서 device address를 받아와서 직접 연결하는 메소드.
+    public void connectDevice(String deviceAddress){
 
+        final String address = deviceAddress;
 
+        new Thread()
+        {
+            public void run() {
+                boolean fail = false;
 
+                BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
+                try {
+                    mBTSocket = createBluetoothSocket(device);
+                } catch (IOException e) {
+                    fail = true;
 
+                }
+                // Establish the Bluetooth socket connection.
+                try {
+                    mBTSocket.connect();
+                } catch (IOException e) {
+                    try {
+                        fail = true;
+                        mBTSocket.close();
+                    } catch (IOException e2) {
+                        //insert code to deal with this
 
-
-
+                    }
+                }
+                if(fail == false) {
+                    mConnectedThread = new ConnectedThread(mBTSocket);
+                    mConnectedThread.start();
+                }
+            }
+        }.start();
+    }
 
 
 
@@ -194,8 +198,6 @@ public class BluetoothService {
                         SystemClock.sleep(100); //pause and wait for rest of data. Adjust this depending on your sending speed.
                         bytes = mmInStream.available(); // how many bytes are ready to be read?
                         bytes = mmInStream.read(buffer, 0, bytes); // record how many bytes we actually read
-                        mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                                .sendToTarget(); // Send the obtained bytes to the UI activity
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
