@@ -106,9 +106,9 @@ def main(unused_argv):
 
         # create input functions for train and evaluate methods.
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={"x": train_data},
-            y=train_labels,
-            batch_size=10,
+            x={"x": adjust_npimage(image_path[:train_num])},
+            y=np.array(image_labels[:train_num]),
+            batch_size=1,
             num_epochs=None,
             shuffle=True)
         eval_input_fn = tf.estimator.inputs.numpy_input_fn(
