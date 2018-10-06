@@ -112,8 +112,8 @@ def main(unused_argv):
             num_epochs=None,
             shuffle=True)
         eval_input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={"x": eval_data},
-            y=eval_labels,
+            x={"x": adjust_npimage(image_path[-test_num:])},
+            y=np.array(image_labels[-test_num:]),
             num_epochs=1,
             shuffle=False)
                               
