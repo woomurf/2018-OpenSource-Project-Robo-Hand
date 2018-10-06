@@ -12,6 +12,9 @@ import tensorflow_hub as hub
 
 FLAGS = None
 
+vailed_ext = [".jpg",".png"]
+image_dict = {}
+
 tf.logging.set_verbosity(tf.logging.INFO)   #logging을 보기 위해
 
 def inceptionv3_model_fn(features, labels, mode):
@@ -68,6 +71,15 @@ def adjust_image(data):
     imgs = tf.image.resize_images(imgs, (299, 299))
 
     return imgs
+
+def image_lists(rootDir,filenames):
+    for lists in os.listdir(rootDir):
+        path = os.path.join(rootDir, lists)
+        filename, file_extension = os.path.splitext(path)
+        if file_extension in vailed_ext:
+            image_dict[path]=filenames.index(os.path.basename(os.path.split(path)[0]))
+        if os.path.isdir(path):
+            image_lists(path,filenames)
 
 def main(unused_argv):
     # if not FLAGS.image_dir:
