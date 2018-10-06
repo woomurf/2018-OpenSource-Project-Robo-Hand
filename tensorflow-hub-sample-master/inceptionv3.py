@@ -101,7 +101,8 @@ def main(unused_argv):
 
         image_path = list(image_dict.keys())
         image_labels = list(image_dict.values())
-
+        train_num = len(image_path) * 4 // 5
+        test_num = len(image_path) - train_num
 
         # create input functions for train and evaluate methods.
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
