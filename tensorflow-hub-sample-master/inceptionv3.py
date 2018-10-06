@@ -99,6 +99,10 @@ def main(unused_argv):
         class_names = os.listdir("C:\\Users\\lamie\\PycharmProjects\\retrain\\data")
         image_lists("C:\\Users\\lamie\\PycharmProjects\\retrain\\data", class_names)
 
+        image_path = list(image_dict.keys())
+        image_labels = list(image_dict.values())
+
+
         # create input functions for train and evaluate methods.
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
             x={"x": train_data},
