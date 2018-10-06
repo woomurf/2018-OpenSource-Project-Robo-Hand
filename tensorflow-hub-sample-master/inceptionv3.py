@@ -63,9 +63,17 @@ def inceptionv3_model_fn(features, labels, mode):
     return tf.estimator.EstimatorSpec(
         mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
+def adjust_npimage(data_path):
+    images = []
+    for path in data_path:
+        value = cv2.imread(path)
+        resized_img = np.ravel(value)
+        resized_img = resized_img.astype(np.float32)/255
+        images.append(resized_img)
+
+    return np.array(images)
 
 def adjust_image(data):
-
     imgs = tf.reshape(data, [-1, 960, 720, 3])
     # Adjust image size to that in Inception-v3 input.
     imgs = tf.image.resize_images(imgs, (299, 299))
