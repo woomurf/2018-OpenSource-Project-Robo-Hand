@@ -95,12 +95,9 @@ def main(unused_argv):
     #     return -1
 
     with tf.Graph().as_default() as g:
-        # Load MNIST data.
-        mnist = tf.contrib.learn.datasets.load_dataset("mnist")
-        train_data = mnist.train.images  # Returns np.array # Returns np.array # shape (55000,784)
-        train_labels = np.asarray(mnist.train.labels, dtype=np.int32)   # train_labels = {ndarray} [7 3 4 ... 5 6 8], shape (55000,)
-        eval_data = mnist.test.images  # Returns np.array # shape (10000,784)
-        eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
+        # image_lists(FLAGS.image_dir)
+        class_names = os.listdir("C:\\Users\\lamie\\PycharmProjects\\retrain\\data")
+        image_lists("C:\\Users\\lamie\\PycharmProjects\\retrain\\data", class_names)
 
         # create input functions for train and evaluate methods.
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
