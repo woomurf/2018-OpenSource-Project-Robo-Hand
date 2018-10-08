@@ -65,10 +65,10 @@ public class BTactivity extends Activity {
         mListPairedDeviceBtn = (Button) findViewById(R.id.ListpairedDevice);
         mDevicesListView = (ListView)findViewById(R.id.deviceList);
 
-        mDevicesListView.setAdapter(mBTArrayAdapter);
-
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTArrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+
+        mDevicesListView.setAdapter(mBTArrayAdapter);
 
         if (btService == null) {
             btService = new BluetoothService();
@@ -195,6 +195,7 @@ public class BTactivity extends Activity {
                 // add the name to the list
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 mBTArrayAdapter.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(), "add device to list", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -209,6 +210,7 @@ public class BTactivity extends Activity {
             for (BluetoothDevice device : mPairedDevices)
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
 
+            mBTArrayAdapter.notifyDataSetChanged();
             Toast.makeText(getApplicationContext(), "Show Paired Devices", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(getApplicationContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
