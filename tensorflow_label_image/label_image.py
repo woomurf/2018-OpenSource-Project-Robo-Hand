@@ -116,6 +116,8 @@ if __name__ == "__main__":
   # if args.output_layer:
   #   output_layer = args.output_layer
 
+  cap = cv2.VideoCapture(0) #웹캠에서 읽기
+  
   model_file = "c:/tmp/output_graph.pb"
   label_file = "c:/tmp/output_labels.txt"
   input_height = 299
