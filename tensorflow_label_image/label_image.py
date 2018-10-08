@@ -41,8 +41,8 @@ def read_tensor_from_image_file(file,
                                 input_width=299,
                                 input_mean=0,
                                 input_std=255):
-  # input_name = "file_reader"
-  # output_name = "normalized"
+  input_name = "file_reader"
+  output_name = "normalized"
   # file_reader = tf.read_file(file_name, input_name)
   # if file_name.endswith(".png"):
   #   image_reader = tf.image.decode_png(
@@ -116,35 +116,41 @@ if __name__ == "__main__":
   # if args.output_layer:
   #   output_layer = args.output_layer
 
-  cap = cv2.VideoCapture(0) #웹캠에서 읽기
-  
-  model_file = "c:/tmp/output_graph.pb"
-  label_file = "c:/tmp/output_labels.txt"
+  cap = cv2.VideoCapture(0) #웹캠에서 읽어 오기 위해
+
+  model_file = "c:/tmp/output_graph.pb" #훈련 모델
+  label_file = "c:/tmp/output_labels.txt" #모델 클래스
   input_height = 299
   input_width = 299
   input_layer = "Placeholder"
   output_layer = "final_result"
-  
-  graph = load_graph(model_file)
-  t = read_tensor_from_image_file(
-      file,
-      input_height=input_height,
-      input_width=input_width,
-      input_mean=input_mean,
-      input_std=input_std)
 
+  graph = load_graph(model_file)
   input_name = "import/" + input_layer
   output_name = "import/" + output_layer
   input_operation = graph.get_operation_by_name(input_name)
   output_operation = graph.get_operation_by_name(output_name)
 
   with tf.Session(graph=graph) as sess:
-    results = sess.run(output_operation.outputs[0], {
-        input_operation.outputs[0]: t
-    })
-  results = np.squeeze(results)
+    while True:
+      ret, frame = cap.read()  #  웹캠에서 읽음
+      t = read_tensor_from_image_file(
+        file=frame, #웹캠 이미지
+        input_height=input_height,
+        input_width=input_width,
+        input_mean=input_mean,
+        input_std=input_std)
 
-  top_k = results.argsort()[-5:][::-1]
-  labels = load_labels(label_file)
-  for i in top_k:
-    print(labels[i], results[i])
+      results = sess.run(output_operation.outputs[0], {
+          input_operation.outputs[0]: t
+      })
+      results = np.squeeze(results)
+
+      top_k = results.argsort()[-5:][::-1]  # top5
+      labels = load_labels(label_file)
+      for i in top_k:
+        str = labels[i] + ": " + np.format_float_positional(results[i])
+        cv2.putText(frame, str, (0, 25*(i+1)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0)) #  이미지에 text
+      cv2.imshow("image", frame)
+      if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
