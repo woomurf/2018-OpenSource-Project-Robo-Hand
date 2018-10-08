@@ -116,6 +116,13 @@ if __name__ == "__main__":
   # if args.output_layer:
   #   output_layer = args.output_layer
 
+  model_file = "c:/tmp/output_graph.pb"
+  label_file = "c:/tmp/output_labels.txt"
+  input_height = 299
+  input_width = 299
+  input_layer = "Placeholder"
+  output_layer = "final_result"
+  
   graph = load_graph(model_file)
   t = read_tensor_from_image_file(
       file_name,
