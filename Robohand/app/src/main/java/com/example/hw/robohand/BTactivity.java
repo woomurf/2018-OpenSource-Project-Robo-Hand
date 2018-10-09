@@ -21,7 +21,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 
-
+import java.io.IOException;
 import java.util.Set;
 
 public class BTactivity extends Activity {
@@ -70,9 +70,9 @@ public class BTactivity extends Activity {
 
         mDevicesListView.setAdapter(mBTArrayAdapter);
 
-        if (btService == null) {
-            btService = new BluetoothService();
-        }
+
+        btService = new BluetoothService(this);
+
 
         mBack.setOnClickListener(new OnClickListener() {
 
@@ -160,6 +160,7 @@ public class BTactivity extends Activity {
     }
 
     public void bluetoothOff(){
+        unregisterReceiver(blReceiver);
         mBTAdapter.disable(); // turn off
     }
 
@@ -191,6 +192,7 @@ public class BTactivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(BluetoothDevice.ACTION_FOUND.equals(action)){
+
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // add the name to the list
                 mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
@@ -200,6 +202,10 @@ public class BTactivity extends Activity {
         }
     };
 
+    protected void onDestroy(){
+        super.onDestroy();
+        unregisterReceiver(blReceiver);
+    }
 
 
     // 기존에 등록되어 있는 디바이스들을 표시해주는 메소드.
@@ -226,18 +232,30 @@ public class BTactivity extends Activity {
                 return;
             }
 
+            if(mBTAdapter.isDiscovering()){
+                mBTAdapter.cancelDiscovery();
+                Toast.makeText(getApplicationContext(),"Discovery stopped",Toast.LENGTH_SHORT).show();
+            }
+
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             final String address = info.substring(info.length() - 17);
 
 
-            // btService를 이용해 device address를 보내고 연결한다. 여기서는 device address를 보내기만 한다.
-            btService.connectDevice(address);
 
-            Intent btIntent = new Intent(getApplicationContext(),MainActivity.class);
-            btIntent.putExtra("btService",btService);
-            startActivity(btIntent);
+            // btService를 이용해 device address를 보내고 연결한다. 여기서는 device address를 보내기만 한다.
+            try{
+
+                Intent btIntent = new Intent(getApplicationContext(),MainActivity.class);
+                btIntent.putExtra("address",address);
+                setResult(RESULT_OK,btIntent);
+                finish();
+
+            }
+            catch(Exception e){
+                Toast.makeText(getApplicationContext(),"connectDevice fail", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 }

@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 import 	java.lang.reflect.Method;
 
+import static android.app.PendingIntent.getActivity;
+
 public class BluetoothService implements Serializable{
 
     private static final String TAG = "BluetoothService";
@@ -34,16 +36,18 @@ public class BluetoothService implements Serializable{
 
     private BluetoothAdapter btAdapter;
     private BluetoothSocket mBTSocket;
+    private Activity mActivity;
 
     // Serial port Service UUID
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    private ConnectedThread mConnectedThread;
+    private ConnectedThread mConnectedThread = null;
 
 
-    public BluetoothService(){
+    public BluetoothService(Activity act){
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
+        mActivity = act;
 
     }
 
@@ -100,6 +104,8 @@ public class BluetoothService implements Serializable{
     public void connectDevice(String deviceAddress){
 
         final String address = deviceAddress;
+       // Toast.makeText(mActivity, "connectDevice start", Toast.LENGTH_SHORT).show();
+
 
         new Thread()
         {
@@ -107,20 +113,29 @@ public class BluetoothService implements Serializable{
                 boolean fail = false;
 
                 BluetoothDevice device = btAdapter.getRemoteDevice(address);
+         //       Toast.makeText(mActivity, "getRemotedevice", Toast.LENGTH_SHORT).show();
+
 
                 try {
                     mBTSocket = createBluetoothSocket(device);
-                } catch (IOException e) {
+           //         Toast.makeText(mActivity, "createBluetoothSocket", Toast.LENGTH_SHORT).show();
+
+                } catch (Exception e) {
                     fail = true;
+        //            Toast.makeText(mActivity, "fail create socket", Toast.LENGTH_SHORT).show();
+
 
                 }
                 // Establish the Bluetooth socket connection.
                 try {
                     mBTSocket.connect();
-                } catch (IOException e) {
+        //            Toast.makeText(mActivity, "connect", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
                     try {
                         fail = true;
                         mBTSocket.close();
+        //                Toast.makeText(mActivity, "fail connect", Toast.LENGTH_SHORT).show();
+
                     } catch (IOException e2) {
                         //insert code to deal with this
 
@@ -133,6 +148,7 @@ public class BluetoothService implements Serializable{
             }
         }.start();
     }
+
 
 
 
