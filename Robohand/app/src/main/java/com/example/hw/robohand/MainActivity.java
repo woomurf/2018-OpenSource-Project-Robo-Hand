@@ -31,7 +31,7 @@ import android.widget.ImageButton;
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-
+import com.example.hw.robohand.BTservice;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Button button3;
     private ImageButton btSet;
 
-    private BluetoothService btService = null;
+    private BTservice mBTservice;
     private String address = "";
     private BluetoothAdapter btAdapter;
 
@@ -61,16 +61,14 @@ public class MainActivity extends AppCompatActivity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-
-        if(btService == null){
-            btService = new BluetoothService(this);
-        }
-
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btService.getConnectStatus()){
-                    btService.sendMessage("1");
+                if (mBTservice == null){
+                    Toast.makeText(getBaseContext(),"Bluetooth not connect", Toast.LENGTH_SHORT).show();
+                }
+                else if(mBTservice.getConnectStatus()){
+                    mBTservice.sendMessage("1");
                     Toast.makeText(getBaseContext(), "send 1", Toast.LENGTH_SHORT).show();
 
                 }
@@ -82,22 +80,30 @@ public class MainActivity extends AppCompatActivity {
         button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btService.getConnectStatus()){
-                    btService.sendMessage("2");
+                if (mBTservice == null){
+                    Toast.makeText(getBaseContext(),"Bluetooth not connect", Toast.LENGTH_SHORT).show();
+                }
+                else if(mBTservice.getConnectStatus()){
+                    mBTservice.sendMessage("2");
                     Toast.makeText(getBaseContext(), "send 2", Toast.LENGTH_SHORT).show();
 
                 }
+                Toast.makeText(getBaseContext(), "연결 안됬지롱", Toast.LENGTH_SHORT).show();
             }
         });
 
         button3.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btService.getConnectStatus()){
-                    btService.sendMessage("3");
+                if (mBTservice == null){
+                    Toast.makeText(getBaseContext(),"Bluetooth not connect", Toast.LENGTH_SHORT).show();
+                }
+                else if(mBTservice.getConnectStatus()){
+                    mBTservice.sendMessage("3");
                     Toast.makeText(getBaseContext(), "send 3", Toast.LENGTH_SHORT).show();
 
                 }
+                Toast.makeText(getBaseContext(), "연결 안됬지롱", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -123,8 +129,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_BT) {
             if(resultCode == Activity.RESULT_OK){
                 address=data.getStringExtra("address");
-                btService.connectDevice(address);
-                Toast.makeText(getBaseContext(), "연결됨.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,BTservice.class);
+                intent.putExtra("address",address);
+                startService(intent);
+               // btService.connectDevice(address);
+                //Toast.makeText(getBaseContext(), "연결됨.", Toast.LENGTH_SHORT).show();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //만약 반환값이 없을 경우의 코드를 여기에 작성하세요.
