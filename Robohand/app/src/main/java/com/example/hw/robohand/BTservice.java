@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -66,6 +67,8 @@ public class BTservice extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(mBluetoothAdapter == null){
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            Toast.makeText(getApplicationContext(),"create BluetoothAdapter", Toast.LENGTH_SHORT).show();
+
         }
         if(intent == null){
             return Service.START_STICKY;
@@ -80,6 +83,7 @@ public class BTservice extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Toast.makeText(getApplicationContext(),"connect Service", Toast.LENGTH_SHORT).show();
         return mBinder;
     }
 

@@ -44,7 +44,7 @@ public class BTactivity extends Activity {
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
 
-    private BTservice btservice;
+    private BluetoothService btservice;
 
     private final Handler mHandler = new Handler() {
 
@@ -167,7 +167,7 @@ public class BTactivity extends Activity {
                                        IBinder service) {
 // 서비스와 연결되었을 때 호출되는 메서드
 // 서비스 객체를 전역변수로 저장
-            BTservice.BTbinder mb = (BTservice.BTbinder) service;
+            BluetoothService.MyBinder mb = (BluetoothService.MyBinder) service;
             btservice = mb.getService(); // 서비스가 제공하는 메소드 호출하여
 // 서비스쪽 객체를 전달받을수 있슴
             isService = true;
@@ -278,12 +278,13 @@ public class BTactivity extends Activity {
             String info = ((TextView) v).getText().toString();
             final String address = info.substring(info.length() - 17);
 
+            BluetoothDevice device  = mBTAdapter.getRemoteDevice(address);
 
 
             // btService를 이용해 device address를 보내고 연결한다. 여기서는 device address를 보내기만 한다.
             try{
 
-                btservice.connectToDevice(address);
+                btservice.connect(device,false);
 
             }
             catch(Exception e){

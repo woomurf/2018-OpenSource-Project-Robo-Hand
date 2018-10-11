@@ -27,7 +27,14 @@
         <service
             android:name=".BTservice"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true">
+        </service>
+
+        <service
+            android:name=".BluetoothService"
+            android:enabled="true"
+            android:exported="true"
+            />
     </application>
 
 </manifest>

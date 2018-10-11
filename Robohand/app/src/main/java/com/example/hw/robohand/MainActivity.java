@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private Button button3;
     private ImageButton btSet;
 
-    private BTservice mBTservice;
+    private BluetoothService mBTservice;
     private String address = "";
     private BluetoothAdapter btAdapter;
 
@@ -65,18 +65,14 @@ public class MainActivity extends AppCompatActivity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if(mBTservice == null){
-            Intent intent = new Intent(MainActivity.this, BTservice.class);
-            bindService(intent,conn,Context.BIND_AUTO_CREATE);
-        }
 
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mBTservice == null) {
                     Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else if (mBTservice.getConnectStatus()) {
-                    mBTservice.sendMessage("1");
+                } else{
+                    mBTservice.write("1");
                     Toast.makeText(getBaseContext(), "send 1", Toast.LENGTH_SHORT).show();
 
                 }
@@ -90,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mBTservice == null) {
                     Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else if (mBTservice.getConnectStatus()) {
-                    mBTservice.sendMessage("2");
+                } else{
+                    mBTservice.write("2");
                     Toast.makeText(getBaseContext(), "send 2", Toast.LENGTH_SHORT).show();
 
                 }
@@ -104,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mBTservice == null) {
                     Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else if (mBTservice.getConnectStatus()) {
-                    mBTservice.sendMessage("3");
+                } else {
+                    mBTservice.write("3");
                     Toast.makeText(getBaseContext(), "send 3", Toast.LENGTH_SHORT).show();
 
                 }
@@ -118,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), BTactivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,REQUEST_CODE_BT);
 
             }
         });
@@ -134,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                                        IBinder service) {
 // 서비스와 연결되었을 때 호출되는 메서드
 // 서비스 객체를 전역변수로 저장
-            BTbinder mb = (BTbinder) service;
+            BluetoothService.MyBinder mb = (BluetoothService.MyBinder) service;
             mBTservice = mb.getService(); // 서비스가 제공하는 메소드 호출하여
 // 서비스쪽 객체를 전달받을수 있슴
             isService = true;
