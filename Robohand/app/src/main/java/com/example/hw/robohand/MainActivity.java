@@ -65,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        if(mBTservice == null){
+            Intent intent = new Intent(MainActivity.this, BTservice.class);
+            bindService(intent,conn,Context.BIND_AUTO_CREATE);
+        }
+
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "send 1", Toast.LENGTH_SHORT).show();
 
                 }
-                Toast.makeText(getBaseContext(), "연결 안됬지롱", Toast.LENGTH_SHORT).show();
+
 
             }
         });
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "send 2", Toast.LENGTH_SHORT).show();
 
                 }
-                Toast.makeText(getBaseContext(), "연결 안됬지롱", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -104,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "send 3", Toast.LENGTH_SHORT).show();
 
                 }
-                Toast.makeText(getBaseContext(), "연결 안됬지롱", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), BTactivity.class);
-                startActivityForResult(intent, REQUEST_CODE_BT);
+                startActivity(intent);
 
             }
         });

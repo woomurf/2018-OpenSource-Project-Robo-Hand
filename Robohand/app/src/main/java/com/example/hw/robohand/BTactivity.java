@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import com.example.hw.robohand.BTservice;
 
 
 import java.io.IOException;
@@ -40,7 +44,7 @@ public class BTactivity extends Activity {
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
 
-    BluetoothService btService = null;
+    private BTservice btservice;
 
     private final Handler mHandler = new Handler() {
 
@@ -71,7 +75,13 @@ public class BTactivity extends Activity {
         mDevicesListView.setAdapter(mBTArrayAdapter);
 
 
-        btService = new BluetoothService(this);
+        /*
+         BTservice를 연결한다.
+         */
+        if(btservice == null){
+            Intent intent = new Intent(BTactivity.this, BTservice.class);
+            bindService(intent,conn,Context.BIND_AUTO_CREATE);
+        }
 
 
         mBack.setOnClickListener(new OnClickListener() {
@@ -85,7 +95,11 @@ public class BTactivity extends Activity {
         });
 
 
-        // 블루투스 켜기
+
+        /*
+        블루투스 켜기
+        */
+
         mBtOn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,6 +156,28 @@ public class BTactivity extends Activity {
         }
     }
 
+    /*
+    Service 연결에 관한 method
+     */
+
+    boolean isService = false; // 서비스 중인 확인용
+
+    ServiceConnection conn = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name,
+                                       IBinder service) {
+// 서비스와 연결되었을 때 호출되는 메서드
+// 서비스 객체를 전역변수로 저장
+            BTservice.BTbinder mb = (BTservice.BTbinder) service;
+            btservice = mb.getService(); // 서비스가 제공하는 메소드 호출하여
+// 서비스쪽 객체를 전달받을수 있슴
+            isService = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+// 서비스와 연결이 끊겼을 때 호출되는 메서드
+            isService = false;
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
@@ -247,10 +283,7 @@ public class BTactivity extends Activity {
             // btService를 이용해 device address를 보내고 연결한다. 여기서는 device address를 보내기만 한다.
             try{
 
-                Intent btIntent = new Intent(getApplicationContext(),MainActivity.class);
-                btIntent.putExtra("address",address);
-                setResult(RESULT_OK,btIntent);
-                finish();
+                btservice.connectToDevice(address);
 
             }
             catch(Exception e){

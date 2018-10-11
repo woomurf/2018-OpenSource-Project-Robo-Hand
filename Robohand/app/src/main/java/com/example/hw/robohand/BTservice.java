@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.os.Bundle;
 import android.os.Message;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,8 +121,16 @@ public class BTservice extends Service {
         }
     }
 
-    private synchronized void connectToDevice(String macAddress) {
+
+
+    /*
+    connect device
+     */
+
+    public synchronized void connectToDevice(String macAddress) {
+
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(macAddress);
+
         if (mState == STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
@@ -137,12 +146,20 @@ public class BTservice extends Service {
         mConnectThread = new ConnectThread(device);
         mConnectThread.start();
         setState(STATE_CONNECTING);
+
+        Toast.makeText(getApplicationContext(), "connect device",Toast.LENGTH_SHORT).show();
     }
+
+
+
+
+
+
 
     private void setState(int state) {
        BTservice.mState = state;
         if (mHandler != null) {
-           // mHandler.obtainMessage(a.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+            //mHandler.obtainMessage(MainActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
         }
     }
 
@@ -227,6 +244,17 @@ public class BTservice extends Service {
 
     }
 
+
+
+
+
+
+
+
+    /*
+    Connect Thread
+     */
+
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
@@ -273,6 +301,16 @@ public class BTservice extends Service {
         }
     }
 
+
+
+
+
+
+
+
+    /*
+    Connected Thread
+     */
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
@@ -344,6 +382,19 @@ public class BTservice extends Service {
 
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public void onDestroy() {
         stop();
@@ -351,11 +402,13 @@ public class BTservice extends Service {
         super.onDestroy();
     }
 
+/*
     private void sendMsg(int flag) {
         Message msg = new Message();
         msg.what = flag;
         handler.sendMessage(msg);
     }
+*/
 
     private Handler handler = new Handler() {
         @Override
