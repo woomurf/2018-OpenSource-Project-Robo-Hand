@@ -35,7 +35,11 @@ import android.widget.ImageButton;
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-import com.example.hw.robohand.BTservice.BTbinder;
+
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     private Button button1;
     private Button button2;
     private Button button3;
-    private ImageButton btSet;
+    private Button btOn;
+    private Button btOff;
+    private Button connect;
 
-    private BluetoothService mBTservice;
-    private String address = "";
-    private BluetoothAdapter btAdapter;
+    private BluetoothSPP bt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,100 +65,111 @@ public class MainActivity extends AppCompatActivity {
         button1 = (Button) findViewById(R.id.Button1);
         button2 = (Button) findViewById(R.id.Button2);
         button3 = (Button) findViewById(R.id.Button3);
-        btSet = (ImageButton) findViewById(R.id.BTsetting);
 
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        btOn = (Button)findViewById(R.id.bt_on);
+        btOff = (Button)findViewById(R.id.bt_off);
+        connect = (Button)findViewById(R.id.connect);
 
+        bt = new BluetoothSPP(this);
+        bt.getBluetoothAdapter();
+        bt.setupService();
+        bt.startService(BluetoothState.DEVICE_OTHER);
+
+
+        connect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+            }
+        });
+
+        btOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bt.stopService();
+            }
+        });
 
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mBTservice == null) {
-                    Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else{
-                    mBTservice.write("1");
-                    Toast.makeText(getBaseContext(), "send 1", Toast.LENGTH_SHORT).show();
-
+                if(bt.isServiceAvailable()){
+                    bt.send("1",true);
                 }
-
-
+                else{
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         button2.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mBTservice == null) {
-                    Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else{
-                    mBTservice.write("2");
-                    Toast.makeText(getBaseContext(), "send 2", Toast.LENGTH_SHORT).show();
-
+                if(bt.isServiceAvailable()){
+                    bt.send("2",true);
                 }
-
+                else{
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         button3.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mBTservice == null) {
-                    Toast.makeText(getBaseContext(), "Bluetooth not connect", Toast.LENGTH_SHORT).show();
-                } else {
-                    mBTservice.write("3");
-                    Toast.makeText(getBaseContext(), "send 3", Toast.LENGTH_SHORT).show();
-
+                if(bt.isServiceAvailable()){
+                    bt.send("3",true);
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        //액티비티 전환
+        bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
+            public void onDeviceConnected(String name, String address) {
+                // Do something when successfully connected
+                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
+            }
 
-        btSet.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), BTactivity.class);
-                startActivityForResult(intent,REQUEST_CODE_BT);
+            public void onDeviceDisconnected() {
+                // Do something when connection was disconnected
+                Toast.makeText(MainActivity.this,"Disconnected",Toast.LENGTH_SHORT).show();
+
+            }
+
+            public void onDeviceConnectionFailed() {
+                // Do something when connection failed
+                Toast.makeText(MainActivity.this,"connect fail",Toast.LENGTH_SHORT).show();
 
             }
         });
-
 
     }
 
 
-    boolean isService = false; // 서비스 중인 확인용
-
-    ServiceConnection conn = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name,
-                                       IBinder service) {
-// 서비스와 연결되었을 때 호출되는 메서드
-// 서비스 객체를 전역변수로 저장
-            BluetoothService.MyBinder mb = (BluetoothService.MyBinder) service;
-            mBTservice = mb.getService(); // 서비스가 제공하는 메소드 호출하여
-// 서비스쪽 객체를 전달받을수 있슴
-            isService = true;
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-// 서비스와 연결이 끊겼을 때 호출되는 메서드
-            isService = false;
-        }
-    };
-
-        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-            if (requestCode == REQUEST_CODE_BT) {
-                if (resultCode == Activity.RESULT_OK) {
-                    address = data.getStringExtra("address");
-                    Intent intent = new Intent(MainActivity.this, BTservice.class);
-                    intent.putExtra("address", address);
-                    bindService(intent, conn, Context.BIND_AUTO_CREATE);
-
-                }
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    //만약 반환값이 없을 경우의 코드를 여기에 작성하세요.
-                }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if(resultCode == Activity.RESULT_OK)
+                bt.connect(data);
+        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if(resultCode == Activity.RESULT_OK) {
+                bt.setupService();
+                bt.startService(BluetoothState.DEVICE_ANDROID);
+                //setup();
+            } else {
+                // Do something if user doesn't choose any device (Pressed back)
             }
-        }//onActivityResult
+        }
+    }
+
+
 }
