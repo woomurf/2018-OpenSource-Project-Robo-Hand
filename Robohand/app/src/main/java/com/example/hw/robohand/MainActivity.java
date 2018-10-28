@@ -11,35 +11,23 @@
     현재 registerReceiver, BroadcastReceiver 등에 대한 이해가 부족하여 BluetoothService의
     discover 메소드를 구현하는데 곤란함이 있음. - 2018 10 04
 
-
  */
-
-
-
 
 package com.example.hw.robohand;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.ServiceConnection;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.DeviceList;
-
+import in.championswimmer.sfg.lib.SimpleFingerGestures;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_BT = 2;
 
+    private SimpleFingerGestures mySfg = new SimpleFingerGestures();
 
     private Button button1;
     private Button button2;
@@ -74,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         bt.getBluetoothAdapter();
         bt.setupService();
         bt.startService(BluetoothState.DEVICE_OTHER);
-
 
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,12 +137,9 @@ public class MainActivity extends AppCompatActivity {
             public void onDeviceConnectionFailed() {
                 // Do something when connection failed
                 Toast.makeText(MainActivity.this,"connect fail",Toast.LENGTH_SHORT).show();
-
             }
         });
-
     }
-
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
@@ -170,6 +155,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }
