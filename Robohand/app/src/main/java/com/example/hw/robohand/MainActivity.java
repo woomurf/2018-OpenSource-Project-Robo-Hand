@@ -71,9 +71,15 @@ public class MainActivity extends AppCompatActivity {
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bt.startService(BluetoothState.DEVICE_OTHER);
-                Intent intent = new Intent(getApplicationContext(), DeviceList.class);
-                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                if(!bt.isBluetoothAvailable() || !bt.isBluetoothEnabled()){
+                    Toast.makeText(MainActivity.this,"NEED TO TURN ON BLUETOOTH",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    bt.startService(BluetoothState.DEVICE_OTHER);
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
+
             }
         });
 
