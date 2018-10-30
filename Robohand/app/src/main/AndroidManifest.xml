@@ -22,19 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BTactivity" />
-
-        <service
-            android:name=".BTservice"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-
-        <service
-            android:name=".BluetoothService"
-            android:enabled="true"
-            android:exported="true"
-            />
     </application>
 
 </manifest>

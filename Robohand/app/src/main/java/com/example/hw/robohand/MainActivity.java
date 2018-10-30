@@ -1,16 +1,6 @@
 /*
-    2018 KMU OPEN SOURCE PROJECT ROBOHAND
-    HYEONWOONG WOO, DAHUN KIM, HANUL BAE
-
-    BluetoothService 객체를 생성하여 Button activity, BTactivity 그리고 추가될 gesture activity 에서
-    같은 객체를 사용할 수 있도록 한다.
-
-    BluetoothService 객체는 bluetooth 연결, 기기 검색, 페어링된 기기와 연결, string 보내기 등의
-    기능을 수행하는 객체이다.
-
-    현재 registerReceiver, BroadcastReceiver 등에 대한 이해가 부족하여 BluetoothService의
-    discover 메소드를 구현하는데 곤란함이 있음. - 2018 10 04
-
+   Bluetooth SPP를 이용하여 bluetooth 연결을 한다.
+   Button Mode activity이다.
 
  */
 
@@ -45,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
-    private static final int REQUEST_CODE_BT = 2;
+    private static final int REQUEST_ENABLE_BT = 2;
 
 
     private Button button1;
@@ -56,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private Button connect;
 
     private BluetoothSPP bt;
+    private BluetoothAdapter mbtAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +61,11 @@ public class MainActivity extends AppCompatActivity {
         btOff = (Button)findViewById(R.id.bt_off);
         connect = (Button)findViewById(R.id.connect);
 
-        bt = new BluetoothSPP(this);
-        bt.getBluetoothAdapter();
-        bt.setupService();
-        bt.startService(BluetoothState.DEVICE_OTHER);
+        mbtAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
+
+        // bluetooth device와 연결한다.
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,20 +74,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        // bluetooth 가 지원되는지 체크하고, bluetooth가 꺼져있다면 bluetooth를 키고, BTSPP를 만든다.
         btOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mbtAdapter == null){
+                    Toast.makeText(MainActivity.this,"NOT SUPPORT BLUETOOTH",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(!mbtAdapter.enable()){
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                        Toast.makeText(MainActivity.this,"BLUETOOTH TURN ON",Toast.LENGTH_SHORT).show();
+                    }
 
+                    bt = new BluetoothSPP(MainActivity.this);
+                    bt.getBluetoothAdapter();
+                    bt.setupService();
+                    bt.startService(BluetoothState.DEVICE_OTHER);
+                }
             }
         });
 
+        // BTSPP 객체를 끈다.
         btOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bt.stopService();
+
             }
         });
 
+        // 각 버튼의 숫자를 보낸다.
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        // bluetooth spp 객체가 device와의 연결 상태가 변할 때마다 메세지를 출력한다.
         bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
             public void onDeviceConnected(String name, String address) {
                 // Do something when successfully connected
@@ -156,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // connect 버튼을 누르고 device 를 선택했을 때, 정상적이라면 device 와 연결한다. 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK)
