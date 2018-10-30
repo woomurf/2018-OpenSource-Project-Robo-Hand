@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private Button connect;
 
     private BluetoothSPP bt;
-    private BluetoothAdapter mbtAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +56,14 @@ public class MainActivity extends AppCompatActivity {
         button2 = (Button) findViewById(R.id.Button2);
         button3 = (Button) findViewById(R.id.Button3);
 
+
         btOn = (Button)findViewById(R.id.bt_on);
         btOff = (Button)findViewById(R.id.bt_off);
         connect = (Button)findViewById(R.id.connect);
 
-        mbtAdapter = BluetoothAdapter.getDefaultAdapter();
+        bt = new BluetoothSPP(MainActivity.this);
+        bt.getBluetoothAdapter();
+        bt.setupService();
 
 
 
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bt.startService(BluetoothState.DEVICE_OTHER);
                 Intent intent = new Intent(getApplicationContext(), DeviceList.class);
                 startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
             }
@@ -79,20 +82,15 @@ public class MainActivity extends AppCompatActivity {
         btOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mbtAdapter == null){
+                if(!bt.isBluetoothAvailable()){
                     Toast.makeText(MainActivity.this,"NOT SUPPORT BLUETOOTH",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    if(!mbtAdapter.enable()){
+                    if(!bt.isBluetoothEnabled()){
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                         Toast.makeText(MainActivity.this,"BLUETOOTH TURN ON",Toast.LENGTH_SHORT).show();
                     }
-
-                    bt = new BluetoothSPP(MainActivity.this);
-                    bt.getBluetoothAdapter();
-                    bt.setupService();
-                    bt.startService(BluetoothState.DEVICE_OTHER);
                 }
             }
         });
@@ -167,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // connect 버튼을 누르고 device 를 선택했을 때, 정상적이라면 device 와 연결한다. 
+    // connect 버튼을 누르고 device 를 선택했을 때, 정상적이라면 device 와 연결한다.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK)
