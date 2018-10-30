@@ -27,15 +27,12 @@ import android.widget.Toast;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.DeviceList;
-import in.championswimmer.sfg.lib.SimpleFingerGestures;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
     private static final int REQUEST_CODE_BT = 2;
-
-    private SimpleFingerGestures mySfg = new SimpleFingerGestures();
 
     private Button button1;
     private Button button2;
@@ -50,6 +47,54 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+        SimpleFingerGestures mySfg = new SimpleFingerGestures();
+        mySfg.setConsumeTouchEvents(true);
+        mySfg.setOnFingerGestureListener(new SimpleFingerGestures.OnFingerGestureListener() {
+            @Override
+            public boolean onSwipeUp(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "swiped " + fingers + " up", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onSwipeDown(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "swiped " + fingers + " down", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onSwipeLeft(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "swiped " + fingers + " left", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onSwipeRight(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "swiped " + fingers + " right", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onPinch(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "Pinch", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onUnpinch(int fingers, long gestureDuration, double gestureDistance) {
+                Toast.makeText(getApplicationContext(), "unPinch", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTap(int fingers) {
+                Toast.makeText(getApplicationContext(), "double Tap", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        */
 
         button1 = (Button) findViewById(R.id.Button1);
         button2 = (Button) findViewById(R.id.Button2);
