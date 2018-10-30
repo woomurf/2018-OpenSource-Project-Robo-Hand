@@ -1,18 +1,3 @@
-/*
-    2018 KMU OPEN SOURCE PROJECT ROBOHAND
-    HYEONWOONG WOO, DAHUN KIM, HANUL BAE
-
-    BluetoothService 객체를 생성하여 Button activity, BTactivity 그리고 추가될 gesture activity 에서
-    같은 객체를 사용할 수 있도록 한다.
-
-    BluetoothService 객체는 bluetooth 연결, 기기 검색, 페어링된 기기와 연결, string 보내기 등의
-    기능을 수행하는 객체이다.
-
-    현재 registerReceiver, BroadcastReceiver 등에 대한 이해가 부족하여 BluetoothService의
-    discover 메소드를 구현하는데 곤란함이 있음. - 2018 10 04
-
- */
-
 package com.example.hw.robohand;
 
 import android.app.Activity;
@@ -20,27 +5,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.example.hw.robohand.R;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.DeviceList;
+import in.championswimmer.sfg.lib.SimpleFingerGestures;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
-    private static final int REQUEST_CODE_BT = 2;
+    private static final int REQUST_CODE_BT = 2;
 
+    // 버튼 객체 생성
+    /*
     private Button button1;
     private Button button2;
     private Button button3;
+    */
     private Button btOn;
     private Button btOff;
     private Button connect;
-
+    private Button change;
+    private LinearLayout gestureLayout;
     private BluetoothSPP bt;
 
     @Override
@@ -49,24 +41,152 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /*
+        button1 = (Button) findViewById(R.id.Button1);
+        button2 = (Button) findViewById(R.id.Button2);
+        button3 = (Button) findViewById(R.id.Button3);
+        */
+
+        btOn = (Button)findViewById(R.id.bt_on);
+        btOff = (Button)findViewById(R.id.bt_off);
+        connect = (Button)findViewById(R.id.connect);
+        change = (Button)findViewById(R.id.change);
+        gestureLayout = (LinearLayout)findViewById(R.id.gestureLayout);
+        bt = new BluetoothSPP(this);
+
+        // 제스처 이벤트를 입력받을 레이아웃 객체 생성
+        final LinearLayout gestureListen = (LinearLayout) findViewById(R.id.layout1);
+
+        // 블루투스 서비스를 이용하기 위해서 bt object setup
+        bt.setupService();
+        // FIXME 스마트폰에서 블루투스가 켜진 상태에서만 어플 진입 가능 << 수정 바람
+        bt.startService(BluetoothState.DEVICE_OTHER);
+
+        // connect 버튼의 onClick 메소드 오버라이딩
+        connect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+            }
+        });
+
+        // btOn 버튼의 onClick 메소드 오버라이딩
+        btOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO 스마트폰 블루투스가 꺼져있을 때 블루투스를 켜기 위한 팝업 제공
+            }
+        });
+
+        // btOff 버튼의 onClick 메소드 오버라이딩
+        btOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bt.stopService();
+            }
+        });
+
+        change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent intent = new Intent(this, SubActivity.class);
+                //startActivity(intent);
+            }
+        });
+
+        /*
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bt.isServiceAvailable()) {
+                    bt.send("1",true);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if(bt.isServiceAvailable()) {
+                    bt.send("2",true);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(bt.isServiceAvailable()) {
+                    bt.send("3",true);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        */
+
+        bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
+            public void onDeviceConnected(String name, String address) {
+                // Do something when successfully connected
+                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
+            }
+
+            public void onDeviceDisconnected() {
+                // Do something when connection was disconnected
+                Toast.makeText(MainActivity.this,"Disconnected",Toast.LENGTH_SHORT).show();
+            }
+
+            public void onDeviceConnectionFailed() {
+                // Do something when connection failed
+                Toast.makeText(MainActivity.this,"connect fail",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // 김다훈이 찾은 제스처 오프소스 객체를 생성
         SimpleFingerGestures mySfg = new SimpleFingerGestures();
+        // 제스처 이벤트를 리스너에게 전달해주는 메소드, boolean type 파라미터로 켜고 끌 수 있다.
         mySfg.setConsumeTouchEvents(true);
+        // 제스처 객체의 리스너를 오버라이딩하여 재구성
         mySfg.setOnFingerGestureListener(new SimpleFingerGestures.OnFingerGestureListener() {
             @Override
             public boolean onSwipeUp(int fingers, long gestureDuration, double gestureDistance) {
-                Toast.makeText(getApplicationContext(), "swiped " + fingers + " up", Toast.LENGTH_SHORT).show();
+                if(bt.isServiceAvailable()) {
+                    bt.send("1",true);
+                    Toast.makeText(getApplicationContext(), "swiped " + fingers + " up\n You sended 1", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
 
             @Override
             public boolean onSwipeDown(int fingers, long gestureDuration, double gestureDistance) {
-                Toast.makeText(getApplicationContext(), "swiped " + fingers + " down", Toast.LENGTH_SHORT).show();
+                if(bt.isServiceAvailable()) {
+                    bt.send("2",true);
+                    Toast.makeText(getApplicationContext(), "swiped " + fingers + " down\n You sended 2", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
 
             @Override
             public boolean onSwipeLeft(int fingers, long gestureDuration, double gestureDistance) {
-                Toast.makeText(getApplicationContext(), "swiped " + fingers + " left", Toast.LENGTH_SHORT).show();
+                if(bt.isServiceAvailable()) {
+                    bt.send("3",true);
+                    Toast.makeText(getApplicationContext(), "swiped " + fingers + " left\n You sended 3", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
 
@@ -94,96 +214,8 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        */
-
-        button1 = (Button) findViewById(R.id.Button1);
-        button2 = (Button) findViewById(R.id.Button2);
-        button3 = (Button) findViewById(R.id.Button3);
-
-        btOn = (Button)findViewById(R.id.bt_on);
-        btOff = (Button)findViewById(R.id.bt_off);
-        connect = (Button)findViewById(R.id.connect);
-
-        bt = new BluetoothSPP(this);
-        bt.getBluetoothAdapter();
-        bt.setupService();
-        bt.startService(BluetoothState.DEVICE_OTHER);
-
-        connect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DeviceList.class);
-                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
-            }
-        });
-
-        btOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        btOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bt.stopService();
-            }
-        });
-
-        button1.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(bt.isServiceAvailable()){
-                    bt.send("1",true);
-                }
-                else{
-                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        button2.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(bt.isServiceAvailable()){
-                    bt.send("2",true);
-                }
-                else{
-                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        button3.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(bt.isServiceAvailable()){
-                    bt.send("3",true);
-                }
-                else{
-                    Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
-            public void onDeviceConnected(String name, String address) {
-                // Do something when successfully connected
-                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
-            }
-
-            public void onDeviceDisconnected() {
-                // Do something when connection was disconnected
-                Toast.makeText(MainActivity.this,"Disconnected",Toast.LENGTH_SHORT).show();
-
-            }
-
-            public void onDeviceConnectionFailed() {
-                // Do something when connection failed
-                Toast.makeText(MainActivity.this,"connect fail",Toast.LENGTH_SHORT).show();
-            }
-        });
+        // 위에서 선언한 레이아웃에 리스너를 부착
+        gestureListen.setOnTouchListener(mySfg);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

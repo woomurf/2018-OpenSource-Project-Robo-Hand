@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:gravity="center_horizontal"
-    tools:context=".MainActivity">
-
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/layout1"
+            android:id="@+id/gestureLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
@@ -27,27 +19,27 @@
             android:orientation="horizontal"
             android:layout_weight="1">
             <Button
-                android:id="@+id/connect"
+                android:id="@+id/connect1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="connect"
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/bt_off"
+                android:id="@+id/bt_off1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="BT OFF"
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/bt_on"
+                android:id="@+id/bt_on1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="BT ON"
                 android:layout_weight="1"/>
             <Button
-                android:id="@+id/change"
+                android:id="@+id/change1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="change"
