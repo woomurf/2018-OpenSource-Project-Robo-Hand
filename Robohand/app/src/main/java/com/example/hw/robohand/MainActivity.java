@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btOff;
     private Button connect;
 
-    private BluetoothSPP bt;
+    private BluetoothSPP2 bt;
+
+    private Button test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         btOff = (Button)findViewById(R.id.bt_off);
         connect = (Button)findViewById(R.id.connect);
 
-        bt = new BluetoothSPP(MainActivity.this);
+        test = (Button)findViewById(R.id.test);
+
+        bt = new BluetoothSPP2(MainActivity.this);
         bt.getBluetoothAdapter();
         bt.setupService();
 
@@ -79,12 +83,11 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), DeviceList.class);
                     startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
                 }
-
             }
         });
 
 
-        // bluetooth 가 지원되는지 체크하고, bluetooth가 꺼져있다면 bluetooth를 키고, BTSPP를 만든다.
+        // bluetooth 가 지원되는지 체크하고, bluetooth가 꺼져있다면 bluetooth를 킨다.
         btOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 bt.stopService();
-
             }
         });
 
@@ -164,6 +166,16 @@ public class MainActivity extends AppCompatActivity {
             public void onDeviceConnectionFailed() {
                 // Do something when connection failed
                 Toast.makeText(MainActivity.this,"connect fail",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        test.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent in = new Intent(MainActivity.this, second.class);
+                in.putExtra("bt",bt);
+                startActivity(in);
 
             }
         });

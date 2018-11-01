@@ -233,4 +233,12 @@
         android:layout_marginStart="32dp"
         android:text="BT ON" />
 
+    <Button
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/title"
+        android:text="test" />
+
 </RelativeLayout>
