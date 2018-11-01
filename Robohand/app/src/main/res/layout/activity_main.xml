@@ -50,7 +50,7 @@
                 android:id="@+id/change"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="change"
+                android:text="gesture"
                 android:layout_weight="1"/>
         </LinearLayout>
     </LinearLayout>

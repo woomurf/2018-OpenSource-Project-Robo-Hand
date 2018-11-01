@@ -1,6 +1,7 @@
 package com.example.hw.robohand;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.example.hw.robohand.R;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
@@ -20,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
 
-    private static final int REQUST_CODE_BT = 2;
+    private static final int REQUEST_ENABLE_BT = 2;
 
     // 버튼 객체 생성
     /*
@@ -58,15 +57,18 @@ public class MainActivity extends AppCompatActivity {
 
         // 블루투스 서비스를 이용하기 위해서 bt object setup
         bt.setupService();
-        // FIXME 스마트폰에서 블루투스가 켜진 상태에서만 어플 진입 가능 << 수정 바람
-        bt.startService(BluetoothState.DEVICE_OTHER);
 
         // connect 버튼의 onClick 메소드 오버라이딩
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DeviceList.class);
-                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                if(!bt.isBluetoothAvailable() || !bt.isBluetoothEnabled()){
+                    Toast.makeText(MainActivity.this, "NEED TO TURN ON BLUETOOTH", Toast.LENGTH_SHORT).show();
+                } else {
+                    bt.startService(BluetoothState.DEVICE_OTHER);
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
             }
         });
 
@@ -74,7 +76,15 @@ public class MainActivity extends AppCompatActivity {
         btOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO 스마트폰 블루투스가 꺼져있을 때 블루투스를 켜기 위한 팝업 제공
+                if(!bt.isBluetoothAvailable()) {
+                    Toast.makeText(MainActivity.this,"NOT SUPPORT BLUETOOTH",Toast.LENGTH_SHORT).show();
+                } else {
+                    if(!bt.isBluetoothEnabled()) {
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                        Toast.makeText(MainActivity.this,"BLUETOOTH TURN ON",Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -89,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(this, SubActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, SubActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -159,8 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 if(bt.isServiceAvailable()) {
                     bt.send("1",true);
                     Toast.makeText(getApplicationContext(), "swiped " + fingers + " up\n You sended 1", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
                 }
                 return false;
@@ -171,8 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 if(bt.isServiceAvailable()) {
                     bt.send("2",true);
                     Toast.makeText(getApplicationContext(), "swiped " + fingers + " down\n You sended 2", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
                 }
                 return false;
