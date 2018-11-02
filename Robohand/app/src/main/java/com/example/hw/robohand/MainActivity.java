@@ -30,7 +30,6 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import app.akexorcist.bluetotohspp.library.DeviceList;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
@@ -41,13 +40,34 @@ public class MainActivity extends AppCompatActivity {
     private Button button1;
     private Button button2;
     private Button button3;
+    private Button button4;
     private Button btOn;
     private Button btOff;
     private Button connect;
 
     private BluetoothSPP2 bt;
+    boolean isService = false;
 
     private Button test;
+
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            //서비스와 연결되었을 때 호출되는 메소드.
+            //서비스 객체를 전역변수로 저장
+
+            BluetoothSPP2.MyBinder mb = (BluetoothSPP2.MyBinder) service;
+            bt = mb.getService();
+            isService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+            isService = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         button1 = (Button) findViewById(R.id.Button1);
         button2 = (Button) findViewById(R.id.Button2);
         button3 = (Button) findViewById(R.id.Button3);
+        button4 = (Button)findViewById(R.id.Button4);
 
 
         btOn = (Button)findViewById(R.id.bt_on);
@@ -65,21 +86,26 @@ public class MainActivity extends AppCompatActivity {
 
         test = (Button)findViewById(R.id.test);
 
-        bt = new BluetoothSPP2(MainActivity.this);
-        bt.getBluetoothAdapter();
-        bt.setupService();
 
+
+        Intent intent = new Intent(
+                MainActivity.this, // 현재 화면
+                BluetoothSPP2.class); // 다음넘어갈 컴퍼넌트
+
+        bindService(intent, // intent 객체
+                conn, // 서비스와 연결에 대한 정의
+                Context.BIND_AUTO_CREATE);
 
 
         // bluetooth device와 연결한다.
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!bt.isBluetoothAvailable() || !bt.isBluetoothEnabled()){
+                if(!bt.isBluetoothEnabled()){
                     Toast.makeText(MainActivity.this,"NEED TO TURN ON BLUETOOTH",Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    bt.startService(BluetoothState.DEVICE_OTHER);
+                    bt.startBTSPP();
                     Intent intent = new Intent(getApplicationContext(), DeviceList.class);
                     startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
                 }
@@ -108,7 +134,9 @@ public class MainActivity extends AppCompatActivity {
         btOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bt.stopService();
+                bt.stopBTSPP();
+                unbindService(conn);
+
             }
         });
 
@@ -117,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(bt.isServiceAvailable()){
-                    bt.send("1",true);
+                    bt.sending("1");
                 }
                 else{
                     Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
@@ -129,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(bt.isServiceAvailable()){
-                    bt.send("2",true);
+                    bt.sending("2");
                 }
                 else{
                     Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
@@ -141,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(bt.isServiceAvailable()){
-                    bt.send("3",true);
+                    bt.sending("3");
                 }
                 else{
                     Toast.makeText(MainActivity.this,"not connected",Toast.LENGTH_SHORT).show();
@@ -149,7 +177,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        button4.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isService)
+                    Toast.makeText(getApplicationContext(),"service",Toast.LENGTH_SHORT).show();
+            }
+        });
 
+/*
         // bluetooth spp 객체가 device와의 연결 상태가 변할 때마다 메세지를 출력한다.
         bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
             public void onDeviceConnected(String name, String address) {
@@ -169,12 +205,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        */
 
         test.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent in = new Intent(MainActivity.this, second.class);
-                in.putExtra("bt",bt);
+             //   in.putExtra("bt",bt);
                 startActivity(in);
 
             }
@@ -188,15 +225,18 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK)
                 bt.connect(data);
-        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+        }
+        /*
+        else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
             if(resultCode == Activity.RESULT_OK) {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
-                //setup();
+
             } else {
                 // Do something if user doesn't choose any device (Pressed back)
             }
         }
+        */
     }
 
 

@@ -22,6 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- service 추가하기 -->
+        <service android:name="BluetoothSPP2"></service>
+
+
     </application>
 
 </manifest>

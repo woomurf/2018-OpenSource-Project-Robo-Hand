@@ -7,9 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+
 public class second extends AppCompatActivity {
 
-    BluetoothSPP2 bt;
+    BluetoothSPP bt;
     int state;
 
     private Button check;
@@ -17,9 +19,9 @@ public class second extends AppCompatActivity {
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity2);
-
+/*
         Intent in = getIntent();
-        bt = (BluetoothSPP2)in.getSerializableExtra("bt");
+      //  bt = (BluetoothSPP2)in.getSerializableExtra("bt");
         state = bt.getServiceState();
 
         check = (Button)findViewById(R.id.check);
@@ -30,6 +32,7 @@ public class second extends AppCompatActivity {
                 Toast.makeText(second.this,state,Toast.LENGTH_SHORT).show();
             }
         });
+        */
     }
 
 
