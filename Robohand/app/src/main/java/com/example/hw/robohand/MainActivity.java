@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button test;
 
+    Intent getData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
         tabHost1.addTab(ts3);
 
 
-
-
-
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -96,7 +92,12 @@ public class MainActivity extends AppCompatActivity {
         bt.getBluetoothAdapter();
         bt.setupService();
 
+        // bluetoothsetting activity에서 보낸 intent를 받고, 데이터가 있다면 연결한다.
+        getData = getIntent();
 
+        if(getData.getExtras() != null){
+            bt.connect(getData);
+        }
 
         // bluetooth device와 연결한다.
         connect.setOnClickListener(new View.OnClickListener() {
