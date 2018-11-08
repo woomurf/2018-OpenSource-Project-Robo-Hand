@@ -71,10 +71,44 @@ public class bluetoothsetting extends AppCompatActivity {
                 // Do something when connection failed
                 Toast.makeText(bluetoothsetting.this,"connect fail",Toast.LENGTH_SHORT).show();
 
-            }
-        });
+        }
+    });
 
 
+}
+
+    private void setState(){
+        int state = bt.getServiceState();
+        switch (state){
+            case -1:
+                edit_connectStatus.setText("Null");
+                break;
+            case 0:
+                edit_connectStatus.setText("None");
+                break;
+            case 1:
+                edit_connectStatus.setText("connecting");
+                break;
+            case 2:
+                edit_connectStatus.setText("connecting");
+                break;
+            case 3:
+                edit_connectStatus.setText("connected");
+                break;
+        }
+
+        boolean available = bt.isBluetoothAvailable();
+        boolean enable = bt.isBluetoothEnabled();
+
+        if(!available){
+            edit_btStatus.setText("do not support bluetooth in this device");
+        }
+        else if(!enable){
+            edit_btStatus.setText("not on bluetooth");
+        }
+        else {
+            edit_btStatus.setText("on bluetooth");
+        }
     }
 
     private View.OnClickListener clickEvent = new View.OnClickListener(){
@@ -84,14 +118,17 @@ public class bluetoothsetting extends AppCompatActivity {
                 // 버튼을 누르면 각 함수 실행!
                 case R.id.btn_on:
                     BluetoothON();
+                    setState();
                     break;
 
                 case R.id.btn_connect:
                     connect();
+                    setState();
                     break;
 
                 case R.id.btn_disconnect:
                     disconnect();
+                    setState();
                     break;
 
                 // 버튼을 누르면 해당 화면으로 이동!
@@ -152,6 +189,7 @@ public class bluetoothsetting extends AppCompatActivity {
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK)
                 bt.connect(data);
+                setState();
                 toButton = new Intent(bluetoothsetting.this,MainActivity.class);
                 toButton.putExtras(data);
                 /*
