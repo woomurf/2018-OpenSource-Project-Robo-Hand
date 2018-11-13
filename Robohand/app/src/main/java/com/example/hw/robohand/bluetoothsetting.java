@@ -25,6 +25,8 @@ public class bluetoothsetting extends AppCompatActivity {
     Button btn_Button, btn_gesture, btn_camera;
     Button btn_on, btn_connect, btn_disconnect;
 
+    Button test;
+
     BluetoothSPP bt;
 
     Intent toButton,toGesture,toCamera;
@@ -49,6 +51,8 @@ public class bluetoothsetting extends AppCompatActivity {
         btn_on = (Button)findViewById(R.id.btn_on);
         btn_connect = (Button)findViewById(R.id.btn_connect);
         btn_disconnect = (Button)findViewById(R.id.btn_disconnect);
+
+        test = (Button)findViewById(R.id.btn_test);
 
         bt = new BluetoothSPP(bluetoothsetting.this);
         bt.getBluetoothAdapter();
@@ -143,6 +147,13 @@ public class bluetoothsetting extends AppCompatActivity {
                 case R.id.btn_cameraMode:
                     startActivity(toCamera);
                     break;
+                case R.id.btn_test:
+                    try {
+                        bt.send("1", true);
+                    }
+                    catch (Exception e){
+                        Toast.makeText(bluetoothsetting.this, "send error", Toast.LENGTH_SHORT).show();
+                    }
             }
         }
     };
