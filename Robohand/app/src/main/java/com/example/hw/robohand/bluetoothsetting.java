@@ -25,7 +25,7 @@ public class bluetoothsetting extends AppCompatActivity {
     Button btn_Button, btn_gesture, btn_camera;
     Button btn_on, btn_connect, btn_disconnect;
 
-    Button test;
+    Button test,test2;
 
     BluetoothSPP bt;
 
@@ -34,6 +34,7 @@ public class bluetoothsetting extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        setContentView(R.layout.btsetting_activity);
 
         //변수 선언하기
         txt_btStatus = (TextView) findViewById(R.id.txt_btStatus);
@@ -53,10 +54,18 @@ public class bluetoothsetting extends AppCompatActivity {
         btn_disconnect = (Button)findViewById(R.id.btn_disconnect);
 
         test = (Button)findViewById(R.id.btn_test);
+        test2 = (Button)findViewById(R.id.btn_test2);
 
         bt = new BluetoothSPP(bluetoothsetting.this);
         bt.getBluetoothAdapter();
         bt.setupService();
+
+        btn_on.setOnClickListener(clickEvent);
+        btn_connect.setOnClickListener(clickEvent);
+        btn_disconnect.setOnClickListener(clickEvent);
+        btn_Button.setOnClickListener(clickEvent);
+        test.setOnClickListener(clickEvent);
+        test2.setOnClickListener(clickEvent);
 
         // bluetooth가 연결되면 Toast 메세지를 띄워준다.
         bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
@@ -137,6 +146,8 @@ public class bluetoothsetting extends AppCompatActivity {
 
                 // 버튼을 누르면 해당 화면으로 이동!
                 case R.id.btn_buttonMode:
+                    disconnect();
+                    setState();
                     startActivity(toButton);
                     break;
 
@@ -148,11 +159,18 @@ public class bluetoothsetting extends AppCompatActivity {
                     startActivity(toCamera);
                     break;
                 case R.id.btn_test:
-                    try {
-                        bt.send("1", true);
+                    if(bt.isServiceAvailable()){
+                        bt.send("1",true);
                     }
-                    catch (Exception e){
-                        Toast.makeText(bluetoothsetting.this, "send error", Toast.LENGTH_SHORT).show();
+                    else{
+                        Toast.makeText(bluetoothsetting.this,"not connected",Toast.LENGTH_SHORT).show();
+                    }
+                case R.id.btn_test2:
+                    if(bt.isServiceAvailable()){
+                        bt.send("2",true);
+                    }
+                    else{
+                        Toast.makeText(bluetoothsetting.this,"not connected",Toast.LENGTH_SHORT).show();
                     }
             }
         }
@@ -191,6 +209,12 @@ public class bluetoothsetting extends AppCompatActivity {
     private void disconnect(){
         if(bt.getServiceState() != -1){
             bt.stopService();
+            try {
+                Thread.sleep(500);
+            }
+            catch (Exception e){
+
+            }
         }
     }
 
@@ -201,8 +225,10 @@ public class bluetoothsetting extends AppCompatActivity {
             if(resultCode == Activity.RESULT_OK)
                 bt.connect(data);
                 setState();
+
+                String address = data.getExtras().getString(BluetoothState.EXTRA_DEVICE_ADDRESS);
                 toButton = new Intent(bluetoothsetting.this,MainActivity.class);
-                toButton.putExtras(data);
+                toButton.putExtra("address",address);
                 /*
                 toGesture = new Intent(bluetoothsetting.this,gesture.class);
                 toGesture.putExtras(data);

@@ -10,31 +10,6 @@
     android:gravity="center_horizontal"
     >
 
-    <TabHost
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/tabHost1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-        <TabWidget
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@android:id/tabs"/>
-
-
-
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@android:id/tabcontent">
-
-
-
             <!--   tab1     -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -275,42 +250,4 @@
 
 
             </LinearLayout>
-        //TAB2
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/content2"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#009688"
-                android:layout_gravity="center"
-                android:padding="8dp"
-                android:text="TAB CONTENT 2"/>
-
-        </LinearLayout>
-            //TAB 3
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/content3"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#005000"
-                    android:layout_gravity="center"
-                    android:padding="8dp"
-                    android:text="TAB CONTENT 3"/>
-
-            </LinearLayout>
-
-
-
-        </FrameLayout>
-        </LinearLayout>
-    </TabHost>
 </RelativeLayout>

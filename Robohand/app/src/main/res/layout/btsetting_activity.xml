@@ -100,6 +100,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="send1" />
+        <Button
+            android:id="@+id/btn_test2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="send2" />
 
     </LinearLayout>
 

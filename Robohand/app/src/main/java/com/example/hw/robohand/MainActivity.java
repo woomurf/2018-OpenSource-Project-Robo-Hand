@@ -11,6 +11,7 @@ package com.example.hw.robohand;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
@@ -46,15 +47,18 @@ public class MainActivity extends AppCompatActivity {
     private Button btOff;
     private Button connect;
 
-    private BluetoothSPP2 bt;
+    private BluetoothSPP bt;
 
     private Button test;
 
     Intent getData;
 
+    String address;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+/*
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1) ;
         tabHost1.setup();
 
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         ts3.setIndicator("TAB 3 ");
         tabHost1.addTab(ts3);
 
-
+*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -88,17 +92,20 @@ public class MainActivity extends AppCompatActivity {
 
         test = (Button)findViewById(R.id.test);
 
-        bt = new BluetoothSPP2(MainActivity.this);
+        bt = new BluetoothSPP(MainActivity.this);
         bt.getBluetoothAdapter();
         bt.setupService();
 
         // bluetoothsetting activity에서 보낸 intent를 받고, 데이터가 있다면 연결한다.
-        getData = getIntent();
-
-        if(getData.getExtras() != null){
-            bt.connect(getData);
+        try {
+            getData = getIntent();
+            address = getData.getStringExtra("address");
+            bt.startService(BluetoothState.DEVICE_OTHER);
+            bt.connect(address);
         }
-
+        catch (Exception e){
+            Toast.makeText(this,"not connect",Toast.LENGTH_SHORT).show();
+        }
         // bluetooth device와 연결한다.
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+/*
         test.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -207,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        */
 
 
 
