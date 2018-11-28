@@ -16,7 +16,6 @@ public class ButtonActivity extends AppCompatActivity {
     private Button settings;
     private Button button[];
     private String msg[];
-    private int idx = 0;
 
     BluetoothSPP BUTTON_BT;
 
@@ -59,11 +58,11 @@ public class ButtonActivity extends AppCompatActivity {
             finish();
         }
 
-        for(idx = 0; idx < 9; idx++) {
-            button[idx].setOnClickListener(new View.OnClickListener() {
+        for(int idx = 0; idx < 9; idx++) {
+            button[idx].setOnClickListener(new ButtonClickListener(idx) {
                 @Override
                 public void onClick(View v) {
-                    buttonClicked(idx);
+                    BUTTON_BT.send(msg[index], true);
                 }
             });
         }
@@ -71,11 +70,8 @@ public class ButtonActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ButtonActivity.this.finish();
+                finish();
             }
         });
-    }
-    private void buttonClicked(int idx) {
-        BUTTON_BT.send(msg[idx], true);
     }
 }
