@@ -27,7 +27,7 @@ public class BluetoothSetting extends AppCompatActivity {
         START = (Button)findViewById(R.id.START);
 
         FIRST_BT = new BluetoothSPP(BluetoothSetting.this);
-        //FIRST_BT.getBluetoothAdapter();
+        FIRST_BT.getBluetoothAdapter();
         FIRST_BT.setupService();
 
         START.setOnClickListener(new View.OnClickListener() {

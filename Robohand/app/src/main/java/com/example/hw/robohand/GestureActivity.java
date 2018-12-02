@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 import in.championswimmer.sfg.lib.SimpleFingerGestures;
@@ -20,39 +21,37 @@ public class GestureActivity extends AppCompatActivity {
     Intent GET_MAC_ADDRESS;
     String MAC_ADDRESS;
 
-    BluetoothSPP GESTURE_BT;
+    private dataString dSet;
 
-    String SWIPE_UP[];
-    String SWIPE_DOWN[];
-    String SWIPE_LEFT[];
-    String SWIPE_RIGHT[];
+    BluetoothSPP GESTURE_BT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gesture);
         back = (Button)findViewById(R.id.gesture_back);
+        settings = (Button)findViewById(R.id.gesture_settings);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GestureActivity.this.finish();
             }
         });
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GestureActivity.this, settings_Gesture.class);
+                startActivityForResult(intent, settings_Gesture.FINISH);
+            }
+        });
+
+        dSet = new dataString();
 
         gestureLayout = (LinearLayout)findViewById(R.id.gestureDraw);
 
         GESTURE_BT = new BluetoothSPP(GestureActivity.this);
-        //GESTURE_BT.getBluetoothAdapter();
+        GESTURE_BT.getBluetoothAdapter();
         GESTURE_BT.setupService();
-
-        SWIPE_UP = new String[5];
-        SWIPE_UP[0] = "0";
-        SWIPE_DOWN = new String[5];
-        SWIPE_DOWN[0] = "1";
-        SWIPE_LEFT = new String[5];
-        SWIPE_LEFT[0] = "2";
-        SWIPE_RIGHT = new String[5];
-        SWIPE_RIGHT[0] = "3";
 
         try {
             GET_MAC_ADDRESS = getIntent();
@@ -69,28 +68,28 @@ public class GestureActivity extends AppCompatActivity {
         mySfg.setOnFingerGestureListener(new SimpleFingerGestures.OnFingerGestureListener() {
             @Override
             public boolean onSwipeUp(int fingers, long gestureDuration, double gestureDistance) {
-                GESTURE_BT.send(SWIPE_UP[fingers - 1], true);
+                GESTURE_BT.send(dSet.getData(fingers, "SWIPE UP"), true);
                 Toast.makeText(getApplicationContext(), "swiped " + fingers + " up", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
             @Override
             public boolean onSwipeDown(int fingers, long gestureDuration, double gestureDistance) {
-                GESTURE_BT.send(SWIPE_DOWN[fingers - 1], true);
+                GESTURE_BT.send(dSet.getData(fingers, "SWIPE DOWN"), true);
                 Toast.makeText(getApplicationContext(), "swiped " + fingers + " down", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
             @Override
             public boolean onSwipeLeft(int fingers, long gestureDuration, double gestureDistance) {
-                GESTURE_BT.send(SWIPE_LEFT[fingers - 1], true);
+                GESTURE_BT.send(dSet.getData(fingers, "SWIPE RIGHT"), true);
                 Toast.makeText(getApplicationContext(), "swiped " + fingers + " left", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
             @Override
             public boolean onSwipeRight(int fingers, long gestureDuration, double gestureDistance) {
-                GESTURE_BT.send(SWIPE_RIGHT[fingers - 1], true);
+                GESTURE_BT.send(dSet.getData(fingers, "SWIPE LEFT"), true);
                 Toast.makeText(getApplicationContext(), "swiped " + fingers + " right", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -115,4 +114,22 @@ public class GestureActivity extends AppCompatActivity {
         });
         gestureLayout.setOnTouchListener(mySfg);
     }
+    /**
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == settings_Gesture.FINISH) {
+            if(resultCode == Activity.RESULT_OK) {
+                FIRST_BT.connect(data);
+                String address = data.getExtras().getString(BluetoothState.EXTRA_DEVICE_ADDRESS);
+                TO_MAIN = new Intent(BluetoothSetting.this, MainActivity.class);
+                TO_MAIN.putExtra("address", address);
+                CHECK_CONNECT = true;
+            }
+        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if(resultCode == Activity.RESULT_OK) {
+                FIRST_BT.setupService();
+                FIRST_BT.startService(BluetoothState.DEVICE_ANDROID);
+            }
+        }
+    }
+    */
 }

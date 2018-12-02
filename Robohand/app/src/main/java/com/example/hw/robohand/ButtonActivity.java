@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -14,8 +15,9 @@ public class ButtonActivity extends AppCompatActivity {
 
     private Button back;
     private Button settings;
+    private TextView connectionCheck;
     private Button button[];
-    private String msg[];
+    private dataString dSet;
 
     BluetoothSPP BUTTON_BT;
 
@@ -29,11 +31,11 @@ public class ButtonActivity extends AppCompatActivity {
 
         back = (Button)findViewById(R.id.button_back);
 
-        msg = new String[9];
-        for(int i = 0; i < 9; i++)
-            msg[i] = String.valueOf(i);
+        connectionCheck = (TextView)findViewById(R.id.connectionCheck);
 
-        button = new Button[9];
+        dSet = new dataString();
+
+        button = new Button[12];
         button[0] = (Button)findViewById(R.id.button1);
         button[1] = (Button)findViewById(R.id.button2);
         button[2] = (Button)findViewById(R.id.button3);
@@ -43,9 +45,12 @@ public class ButtonActivity extends AppCompatActivity {
         button[6] = (Button)findViewById(R.id.button7);
         button[7] = (Button)findViewById(R.id.button8);
         button[8] = (Button)findViewById(R.id.button9);
+        button[9] = (Button)findViewById(R.id.button10);
+        button[10] = (Button)findViewById(R.id.button11);
+        button[11] = (Button)findViewById(R.id.button12);
 
         BUTTON_BT = new BluetoothSPP(ButtonActivity.this);
-        //BUTTON_BT.getBluetoothAdapter();
+        BUTTON_BT.getBluetoothAdapter();
         BUTTON_BT.setupService();
 
         try {
@@ -58,15 +63,24 @@ public class ButtonActivity extends AppCompatActivity {
             finish();
         }
 
-        for(int idx = 0; idx < 9; idx++) {
+        for(int idx = 0; idx < 12; idx++) {
             button[idx].setOnClickListener(new ButtonClickListener(idx) {
                 @Override
                 public void onClick(View v) {
-                    BUTTON_BT.send(msg[index], true);
+                    BUTTON_BT.send(dSet.getData(index), true);
                 }
             });
         }
-
+        connectionCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(BUTTON_BT.isBluetoothEnabled() && BUTTON_BT.isBluetoothAvailable()) {
+                    connectionCheck.setText("GOOD");
+                }
+                else
+                    connectionCheck.setText("MISS");
+            }
+        });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
