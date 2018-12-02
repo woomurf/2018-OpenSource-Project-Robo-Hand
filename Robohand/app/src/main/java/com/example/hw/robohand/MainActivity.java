@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ButtonActivity.class);
                 intent.putExtra("address", MAC_ADDRESS);
+
                 startActivity(intent);
             }
         });

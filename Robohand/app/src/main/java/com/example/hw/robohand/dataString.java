@@ -14,8 +14,8 @@ public class dataString {
         data[7] = "7";
         data[8] = "8";
         data[9] = "9";
-        data[10] = "10";
-        data[11] = "12";
+        data[10] = "a";
+        data[11] = "b";
     }
     public String getData(int idx) {
         return data[idx];
