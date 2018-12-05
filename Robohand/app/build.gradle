@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.hw.robohand"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -15,6 +15,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    aaptOptions {
+        noCompress "tflite"
+        noCompress "lite"
     }
 }
 
@@ -27,4 +31,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'in.championswimmer:SimpleFingerGestures_Android_Library:1.2'
     implementation 'com.akexorcist:bluetoothspp:1.0.0'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:16.2.2'
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.gms:google-services:3.0.0'
 }
+apply plugin: 'com.google.gms.google-services'

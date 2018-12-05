@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "415840430176",
+    "firebase_url": "https://robohand-c17aa.firebaseio.com",
+    "project_id": "robohand-c17aa",
+    "storage_bucket": "robohand-c17aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415840430176:android:8aab02233edd5a65",
+        "android_client_info": {
+          "package_name": "com.example.dngus.mlkit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415840430176-c4nvslj22l7nqe696j6uev2hp07e4nue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOfBLMuYLdOshGUqW_64q9ro-at9Ggaj4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415840430176:android:baa21d0d719d26c0",
+        "android_client_info": {
+          "package_name": "com.example.hw.robohand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415840430176-c4nvslj22l7nqe696j6uev2hp07e4nue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOfBLMuYLdOshGUqW_64q9ro-at9Ggaj4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
